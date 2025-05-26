@@ -13,17 +13,19 @@ namespace LogComponent.Loggers
 
         private StreamWriter? _writer;
 
-        protected LoggerBase()
+        protected LoggerBase(DateTime initDate)
         {
             if (!Directory.Exists(@"C:\LogTest"))
                 Directory.CreateDirectory(@"C:\LogTest");
 
-            _initDate = DateTime.Now;
+            _initDate = initDate;
         }
 
         protected virtual string TimeStampFormat { get; set; } = "yyyy-MM-dd HH:mm:ss:fff";
 
         public string Name { get; private set; } = Guid.NewGuid().ToString();
+
+        public bool IsStopped { get; private set; } = false;
 
         protected virtual StreamWriter GetStreamWriter()
         {
@@ -31,7 +33,7 @@ namespace LogComponent.Loggers
             {
                 _writer?.Dispose();
 
-                var writer = File.AppendText(@"C:\LogTest\Log" + DateTime.Now.ToString("yyyyMMdd HHmmss fff") + DateTime.Now.Ticks + ".log");
+                var writer = File.AppendText(@"C:\LogTest\Log" + DateTime.Now.ToString("yyyyMMdd HHmmss fff") + Name + ".log");
                 writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
                 writer.AutoFlush = true;
 
@@ -43,10 +45,8 @@ namespace LogComponent.Loggers
 
         protected virtual bool IsStreamWriterStillValid() => (DateTime.Now - _initDate).Days == 0;
 
-        public abstract void StopWithFlush();
+        public abstract Task WriteAsync(IAsyncEnumerable<LogLine> lineStream);
 
-        public abstract void StopWithoutFlush();
-
-        public abstract Task WriteAsync(IAsyncEnumerable<LogLine> lineStream, CancellationToken ct);
+        public virtual void Stop() => IsStopped = true;
     }
 }

@@ -3,14 +3,11 @@ using System.Text;
 
 namespace LogComponent.Loggers
 {
-    public sealed class AsyncDelayableLogger : LoggerBase, IDelayableLogger
+    public sealed class AsyncFlushableLogger : LoggerBase, IFlushableLogger
     {
-        public AsyncDelayableLogger(DateTime initDate, int delay = 0) : base(initDate)
-        {
-            Delay = delay;
-        }
+        public AsyncFlushableLogger(DateTime initDate) : base(initDate) { }
 
-        public int Delay { get; private set; }
+        public bool IsStoppedWithFlush { get; private set; } = false;
 
         public override async Task WriteAsync(IAsyncEnumerable<LogLine> lineStream)
         {
@@ -20,7 +17,7 @@ namespace LogComponent.Loggers
 
                 await foreach (var line in lineStream)
                 {
-                    if (IsStopped)
+                    if (IsStopped && !IsStoppedWithFlush)
                     {
                         Console.WriteLine("Operation was stopped");
                         return;
@@ -33,6 +30,11 @@ namespace LogComponent.Loggers
                         writer = GetStreamWriter();
                     }
 
+                    if (IsStoppedWithFlush)
+                    {
+                        stringBuilder.Append("Flush stop: ");
+                    }
+
                     stringBuilder.Append(line.Timestamp.ToString(TimeStampFormat));
                     stringBuilder.Append('\t');
                     stringBuilder.Append(line.LineText());
@@ -40,9 +42,8 @@ namespace LogComponent.Loggers
                     stringBuilder.Append(Environment.NewLine);
 
                     await writer.WriteAsync(stringBuilder.ToString()).ConfigureAwait(false);
-
-                    await Task.Delay(Delay).ConfigureAwait(false);
                 }
+
 
                 Console.WriteLine("Operation is done");
             }
@@ -52,5 +53,7 @@ namespace LogComponent.Loggers
                 throw;
             }
         }
+
+        public void StopWithFlush() => IsStoppedWithFlush = true;
     }
 }
