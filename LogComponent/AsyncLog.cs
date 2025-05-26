@@ -1,8 +1,10 @@
-﻿using System.Text;
+﻿using LogComponent.Loggers;
+using LogComponent.Models;
+using System.Text;
 
 namespace LogComponent
 {
-    public class AsyncLog : ILog
+    public class AsyncLog //: ILog
     {
         private Thread _runThread;
         private List<LogLine> _lines = new List<LogLine>();
@@ -104,7 +106,7 @@ namespace LogComponent
 
         public void Write(string text)
         {
-            this._lines.Add(new LogLine() { Text = text, Timestamp = DateTime.Now });
+            //this._lines.Add(new LogLine() { Text = text, Timestamp = DateTime.Now });
         }
     }
 }

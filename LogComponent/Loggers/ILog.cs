@@ -1,7 +1,11 @@
-﻿namespace LogComponent
+﻿using LogComponent.Models;
+
+namespace LogComponent.Loggers
 {
     public interface ILog
     {
+        string Name { get; }
+
         /// <summary>
         /// Stop the logging. If any outstadning logs theses will not be written to Log
         /// </summary>
@@ -15,9 +19,7 @@
         /// <summary>
         /// Write a message to the Log.
         /// </summary>
-        /// <param name="text">The text to written to the log</param>
-        void Write(string text);
-
-
+        /// <param name="lineStream">Represens a stream of log messages</param>
+        Task WriteAsync(IAsyncEnumerable<LogLine> lineStream, CancellationToken ct);
     }
 }

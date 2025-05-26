@@ -1,15 +1,16 @@
 ﻿using System.Text;
 
-namespace LogComponent
+namespace LogComponent.Models
 {
     /// <summary>
     /// This is the object that the diff. loggers (filelogger, consolelogger etc.) will operate on. The LineText() method will be called to get the text (formatted) to log
     /// </summary>
     public class LogLine
     {
-        public LogLine()
+        public LogLine(DateTime? timestamp = null, string? text = null)
         {
-            this.Text = "";
+            Timestamp = timestamp ?? DateTime.Now;
+            Text = text ?? string.Empty;
         }
 
         /// <summary>
@@ -18,32 +19,28 @@ namespace LogComponent
         /// <returns></returns>
         public virtual string LineText()
         {
-            StringBuilder sb = new StringBuilder();
 
-            if (this.Text.Length > 0)
+            if (!string.IsNullOrWhiteSpace(Text))
             {
-                sb.Append(this.Text);
+                StringBuilder sb = new StringBuilder();
+
+                sb.Append(Text);
                 sb.Append(". ");
+
+                return sb.ToString();
             }
 
-            sb.Append(this.CreateLineText());
-
-            return sb.ToString();
-        }
-
-        public virtual string CreateLineText()
-        {
-            return "";
+            return string.Empty;
         }
 
         /// <summary>
         /// The text to be display in logline
         /// </summary>
-        public string Text { get; set; }
+        private string Text { get; set; }
 
         /// <summary>
         /// The Timestamp is initialized when the log is added. Th
         /// </summary>
-        public virtual DateTime Timestamp { get; set; }
+        public virtual DateTime Timestamp { get; private set; }
     }
 }
