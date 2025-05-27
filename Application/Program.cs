@@ -8,9 +8,10 @@ namespace LogUsers
     {
         static void Main(string[] args)
         {
-            AsyncDelayableLogger logger1 = new AsyncDelayableLogger(DateTime.Now, 50);
+            ILog logger1 = new AsyncDelayableLogger(DateTime.Now, 50);
 
-            IRunner runner1 = new DelayableRunnerBuilder(50).SetStartPoint(0)
+            IRunner runner1 = new DelayableRunnerBuilder().SetDelay(50)
+                .SetStartPoint(0)
                 .SetCondition(i => i < 15)
                 .SetIncrement(i => i + 1)
                 .SetMsg("Number with No flush: ")
@@ -23,7 +24,7 @@ namespace LogUsers
 
             AsyncFlushableLogger logger2 = new AsyncFlushableLogger(DateTime.Now);
 
-            IRunner runner2 = new RunnerBuilder<Runner>().SetStartPoint(50)
+            IRunner runner2 = new RunnerBuilder().SetStartPoint(50)
                 .SetCondition(i => i > 0)
                 .SetIncrement(i => i - 1)
                 .SetMsg("Number with flush: ")
@@ -33,7 +34,7 @@ namespace LogUsers
 
             //Thread.Sleep(15);
 
-            logger2.StopWithFlush();
+            //logger2.StopWithFlush();
             //logger2.Stop();
 
             Console.ReadLine();

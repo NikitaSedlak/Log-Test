@@ -66,4 +66,13 @@ namespace LogComponent.LoggerRunnerBuilders
             return this;
         }
     }
+
+    public sealed class RunnerBuilder : RunnerBuilder<Runner>
+    {
+        public RunnerBuilder() 
+            : base()
+        {
+            
+        }
+    }
 }

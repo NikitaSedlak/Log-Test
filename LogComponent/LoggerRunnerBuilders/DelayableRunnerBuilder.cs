@@ -5,9 +5,15 @@ namespace LogComponent.LoggerRunnerBuilders
 {
     public class DelayableRunnerBuilder : RunnerBuilder<DelayableRunner>
     {
-        public DelayableRunnerBuilder(int delay) : base()
+        public DelayableRunnerBuilder() : base()
+        {
+        }
+
+        public RunnerBuilder<DelayableRunner> SetDelay(int delay)
         {
             _runner.SetDelay(delay);
+
+            return this;
         }
 
         protected override bool IsInvalid()
