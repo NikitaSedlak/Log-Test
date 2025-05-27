@@ -1,10 +1,5 @@
 ﻿using LogComponent.Models;
 using LogComponent.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LogComponent.Loggers
 {
@@ -12,16 +7,22 @@ namespace LogComponent.Loggers
     {
         private readonly DateTime _initDate;
         private readonly IDateTimeService _dateTimeService;
+        private readonly IStreamWriterService _streamWriterService;
 
-        private StreamWriter? _writer;
+        private IStreamLogWriter? _writer;
+        private DateTime _currDate;
+        private DateTime? _republishDate;
 
-        protected LoggerBase(IDateTimeService dateTimeService)
+        protected LoggerBase(IDateTimeService dateTimeService, IStreamWriterService streamWriterService)
         {
             if (!Directory.Exists(@"C:\LogTest"))
                 Directory.CreateDirectory(@"C:\LogTest");
 
             _initDate = dateTimeService.GetCurrentDateTime();
+            _currDate = dateTimeService.GetCurrentDateTime();
+            _republishDate = null;
             _dateTimeService = dateTimeService;
+            _streamWriterService = streamWriterService;
         }
 
         protected virtual string TimeStampFormat { get; set; } = "yyyy-MM-dd HH:mm:ss:fff";
@@ -30,23 +31,25 @@ namespace LogComponent.Loggers
 
         public bool IsStopped { get; private set; } = false;
 
-        protected virtual StreamWriter GetStreamWriter()
+        protected virtual IStreamLogWriter GetStreamWriter()
         {
-            if (_writer is null || !IsStreamWriterStillValid())
+            if (_writer is null || ShouldRepublishStreamWriter())
             {
+                _currDate = _dateTimeService.GetCurrentDateTime();
+                _republishDate = _writer is not null ? _dateTimeService.GetCurrentDateTime() : null;
+
                 _writer?.Dispose();
 
-                var writer = File.AppendText(@"C:\LogTest\Log" + _dateTimeService.GetCurrentDateTime().ToString("yyyyMMdd HHmmss fff") + Name + ".log");
-                writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
-                writer.AutoFlush = true;
-
-                _writer = writer;
+                _writer = _streamWriterService.GetStreamWriter(_currDate, Name);
             }
 
             return _writer;
         }
 
-        protected virtual bool IsStreamWriterStillValid() => (_dateTimeService.GetCurrentDateTime() - _initDate).Days == 0;
+        protected virtual bool ShouldRepublishStreamWriter()
+        {
+            return (_dateTimeService.GetCurrentDateTime() - (_republishDate ?? _initDate)).Days != 0;
+        }
 
         public abstract Task WriteAsync(IAsyncEnumerable<LogLine> lineStream);
 

@@ -9,7 +9,7 @@ namespace LogUsers
     {
         static void Main(string[] args)
         {
-            ILog logger1 = new AsyncDelayableLogger(new DateTimeService(), 50);
+            ILog logger1 = new AsyncDelayableLogger(new DateTimeService(), new StreamWriterService(), 50);
 
             IRunner runner1 = new DelayableRunnerBuilder().SetDelay(50)
                 .SetStartPoint(0)
@@ -23,7 +23,7 @@ namespace LogUsers
 
             // --- *** ---
 
-            AsyncFlushableLogger logger2 = new AsyncFlushableLogger(new DateTimeService());
+            AsyncFlushableLogger logger2 = new AsyncFlushableLogger(new DateTimeService(), new StreamWriterService());
 
             IRunner runner2 = new RunnerBuilder().SetStartPoint(50)
                 .SetCondition(i => i > 0)

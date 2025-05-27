@@ -6,7 +6,7 @@ namespace LogComponent.Loggers
 {
     public sealed class AsyncFlushableLogger : LoggerBase, IFlushableLogger
     {
-        public AsyncFlushableLogger(IDateTimeService dateTimeService) : base(dateTimeService) { }
+        public AsyncFlushableLogger(IDateTimeService dateTimeService, IStreamWriterService streamWriterService) : base(dateTimeService, streamWriterService) { }
 
         public bool IsStoppedWithFlush { get; private set; } = false;
 
@@ -26,7 +26,7 @@ namespace LogComponent.Loggers
 
                     StringBuilder stringBuilder = new();
 
-                    if (!IsStreamWriterStillValid())
+                    if (ShouldRepublishStreamWriter())
                     {
                         writer = GetStreamWriter();
                     }

@@ -6,7 +6,7 @@ namespace LogComponent.Loggers
 {
     public sealed class AsyncDelayableLogger : LoggerBase, IDelayableLogger
     {
-        public AsyncDelayableLogger(IDateTimeService dateTimeService, int delay = 0) : base(dateTimeService)
+        public AsyncDelayableLogger(IDateTimeService dateTimeService, IStreamWriterService streamWriterService, int delay = 0) : base(dateTimeService, streamWriterService)
         {
             Delay = delay;
         }
@@ -29,7 +29,7 @@ namespace LogComponent.Loggers
 
                     StringBuilder stringBuilder = new();
 
-                    if (!IsStreamWriterStillValid())
+                    if (ShouldRepublishStreamWriter())
                     {
                         writer = GetStreamWriter();
                     }
