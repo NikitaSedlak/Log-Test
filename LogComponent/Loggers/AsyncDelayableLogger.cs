@@ -1,11 +1,12 @@
 ﻿using LogComponent.Models;
+using LogComponent.Services;
 using System.Text;
 
 namespace LogComponent.Loggers
 {
     public sealed class AsyncDelayableLogger : LoggerBase, IDelayableLogger
     {
-        public AsyncDelayableLogger(DateTime initDate, int delay = 0) : base(initDate)
+        public AsyncDelayableLogger(IDateTimeService dateTimeService, int delay = 0) : base(dateTimeService)
         {
             Delay = delay;
         }

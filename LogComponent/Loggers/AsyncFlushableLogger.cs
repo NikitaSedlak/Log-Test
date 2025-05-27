@@ -1,11 +1,12 @@
 ﻿using LogComponent.Models;
+using LogComponent.Services;
 using System.Text;
 
 namespace LogComponent.Loggers
 {
     public sealed class AsyncFlushableLogger : LoggerBase, IFlushableLogger
     {
-        public AsyncFlushableLogger(DateTime initDate) : base(initDate) { }
+        public AsyncFlushableLogger(IDateTimeService dateTimeService) : base(dateTimeService) { }
 
         public bool IsStoppedWithFlush { get; private set; } = false;
 

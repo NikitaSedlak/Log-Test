@@ -1,4 +1,5 @@
 ﻿using LogComponent.Models;
+using LogComponent.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +11,17 @@ namespace LogComponent.Loggers
     public abstract class LoggerBase : ILog
     {
         private readonly DateTime _initDate;
+        private readonly IDateTimeService _dateTimeService;
 
         private StreamWriter? _writer;
 
-        protected LoggerBase(DateTime initDate)
+        protected LoggerBase(IDateTimeService dateTimeService)
         {
             if (!Directory.Exists(@"C:\LogTest"))
                 Directory.CreateDirectory(@"C:\LogTest");
 
-            _initDate = initDate;
+            _initDate = dateTimeService.GetCurrentDateTime();
+            _dateTimeService = dateTimeService;
         }
 
         protected virtual string TimeStampFormat { get; set; } = "yyyy-MM-dd HH:mm:ss:fff";
@@ -33,7 +36,7 @@ namespace LogComponent.Loggers
             {
                 _writer?.Dispose();
 
-                var writer = File.AppendText(@"C:\LogTest\Log" + DateTime.Now.ToString("yyyyMMdd HHmmss fff") + Name + ".log");
+                var writer = File.AppendText(@"C:\LogTest\Log" + _dateTimeService.GetCurrentDateTime().ToString("yyyyMMdd HHmmss fff") + Name + ".log");
                 writer.Write("Timestamp".PadRight(25, ' ') + "\t" + "Data".PadRight(15, ' ') + "\t" + Environment.NewLine);
                 writer.AutoFlush = true;
 
@@ -43,7 +46,7 @@ namespace LogComponent.Loggers
             return _writer;
         }
 
-        protected virtual bool IsStreamWriterStillValid() => (DateTime.Now - _initDate).Days == 0;
+        protected virtual bool IsStreamWriterStillValid() => (_dateTimeService.GetCurrentDateTime() - _initDate).Days == 0;
 
         public abstract Task WriteAsync(IAsyncEnumerable<LogLine> lineStream);
 
