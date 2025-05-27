@@ -56,7 +56,11 @@ namespace LogComponent.Test.Loggers
             _dateTimeServiceMock
                 .SetupSequence(x => x.GetCurrentDateTime())
                 .Returns(new DateTime(2025, 5, 27, 23, 59, 59, 998))
-                .Returns(new DateTime(2025, 5, 28, 00, 00, 00, 2));
+                .Returns(new DateTime(2025, 5, 27, 23, 59, 59, 998))
+                .Returns(new DateTime(2025, 5, 27, 23, 59, 59, 998))
+                .Returns(new DateTime(2025, 5, 28, 00, 00, 01, 2))
+                .Returns(new DateTime(2025, 5, 28, 00, 00, 01, 2))
+                .Returns(new DateTime(2025, 5, 28, 00, 00, 01, 2));
         }
 
         protected void GivenStreamWriter()

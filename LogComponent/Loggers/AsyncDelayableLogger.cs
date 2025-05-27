@@ -45,6 +45,7 @@ namespace LogComponent.Loggers
                     await Task.Delay(Delay).ConfigureAwait(false);
                 }
 
+                writer.Dispose();
                 Console.WriteLine("Operation is done");
             }
             catch (Exception ex)

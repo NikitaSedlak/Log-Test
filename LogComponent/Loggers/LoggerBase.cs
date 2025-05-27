@@ -48,7 +48,7 @@ namespace LogComponent.Loggers
 
         protected virtual bool ShouldRepublishStreamWriter()
         {
-            return (_dateTimeService.GetCurrentDateTime() - (_republishDate ?? _initDate)).Days != 0;
+            return _dateTimeService.GetCurrentDateTime().Date > (_republishDate ?? _initDate).Date;
         }
 
         public abstract Task WriteAsync(IAsyncEnumerable<LogLine> lineStream);
